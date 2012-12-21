@@ -417,7 +417,7 @@ convert_docbook2html() {
 	fi
 
 	cmd="xmllint --nonet --xinclude \"$doc_indir/$doc_infile\" |\
-          xsltproc $params -o \"$doc_outdir/$doc_outfile\" \"$xsltdir/docbook/html/db2$doc_format.xsl\" -"
+          xsltproc --nonet $params -o \"$doc_outdir/$doc_outfile\" \"$xsltdir/docbook/html/db2$doc_format.xsl\" -"
 	echo_verbose "$cmd"
 	eval "$cmd"
 	exit 0
@@ -480,9 +480,9 @@ convert_mallard2html() {
 	done
 	echo '</cache:cache>'
     ) > "$doc_cache_in"
-    xsltproc -o "$doc_cache" "$xsltdir/mallard/cache/mal-cache.xsl" "$doc_cache_in"
+    xsltproc --nonet -o "$doc_cache" "$xsltdir/mallard/cache/mal-cache.xsl" "$doc_cache_in"
     rm "$doc_cache_in"
-    echo "$XSL_CACHE_LS" | xsltproc - "$doc_cache" | while read doc_input; do
+    echo "$XSL_CACHE_LS" | xsltproc --nonet - "$doc_cache" | while read doc_input; do
 	doc_input=$(urldecode $(echo "$doc_input" | sed -e 's/^file:\/\///'))
 	doc_indir=$( (cd $(dirname "$doc_input") && pwd) )
 	doc_infile=$(basename "$doc_input")
@@ -582,7 +582,7 @@ create_css() {
     fi
 
     echo_verbose "Creating $doc_output using $doc_input_page"
-    echo "$XSL_MALLARD_CSS" | xsltproc -o "$doc_output" - "$doc_input_page";
+    echo "$XSL_MALLARD_CSS" | xsltproc --nonet -o "$doc_output" - "$doc_input_page";
 }
 
 convert_2html() {
