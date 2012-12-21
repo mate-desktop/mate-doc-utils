@@ -30,7 +30,7 @@ xsl_DATA =				\
 EXTRA_DIST=$(xsl_DATA)
 
 report.xml: $(wildcard db*.xsl) elements report.sh report.xslt
-	./report.sh | xsltproc -o report.xml report.xslt -
+	./report.sh | xsltproc --nonet -o report.xml report.xslt -
 report.html: report.xml report.xslt
-	xsltproc -o report.html report.xslt report.xml
+	xsltproc --nonet -o report.html report.xslt report.xml
 

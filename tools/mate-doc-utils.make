@@ -37,7 +37,7 @@ $(DOC_H_FILE): $(DOC_H_DOCS);
 	list='$(DOC_H_DOCS)'; for doc in $$list; do \
 	  xmlpath="`echo $$doc | sed -e 's/^\(.*\/\).*/\1/' -e '/\//!s/.*//'`:$(srcdir)/`echo $$doc | sed -e 's/^\(.*\/\).*/\1/' -e '/\//!s/.*//'`"; \
 	  if ! test -f "$$doc"; then doc="$(srcdir)/$$doc"; fi; \
-	  xsltproc --path "$$xmlpath" $(_credits) $$doc; \
+	  xsltproc --nonet --path "$$xmlpath" $(_credits) $$doc; \
 	done | sort | uniq \
 	  | awk 'BEGIN{s=""}{n=split($$0,w,"<");if(s!=""&&s!=substr(w[1],1,length(w[1])-1)){print s};if(n>1){print $$0;s=""}else{s=$$0}};END{if(s!=""){print s}}' \
 	  | sed -e 's/\\/\\\\/' -e 's/"/\\"/' -e 's/\(.*\)/\t"\1",/' >> $@.tmp
@@ -50,7 +50,7 @@ $(DOC_H_FILE): $(DOC_H_DOCS);
 	  docid=`echo "$$doc" | sed -e 's/.*\/\([^/]*\)\.xml/\1/' \
 	    | sed -e 's/[^a-zA-Z_]/_/g' | tr 'a-z' 'A-Z'`; \
 	  echo $$xmlpath; \
-	  ids=`xsltproc --xinclude --path "$$xmlpath" $(_ids) $$doc`; \
+	  ids=`xsltproc --nonet --xinclude --path "$$xmlpath" $(_ids) $$doc`; \
 	  for id in $$ids; do \
 	    echo '#define HELP_'`echo $$docid`'_'`echo $$id \
 	      | sed -e 's/[^a-zA-Z_]/_/g' | tr 'a-z' 'A-Z'`' "'$$id'"' >> $@.tmp; \
@@ -180,7 +180,7 @@ $(_DOC_OMF_DB) : $(DOC_MODULE)-%.omf : %/$(DOC_MODULE).xml
 	  echo "The file '$(_skcontentslist)' does not exist." >&2;		\
 	  echo "Please check your ScrollKeeper installation." >&2;		\
 	  exit 1; }
-	xsltproc -o $@ $(call db2omf_args,$@,$<,'docbook') || { rm -f "$@"; exit 1; }
+	xsltproc --nonet -o $@ $(call db2omf_args,$@,$<,'docbook') || { rm -f "$@"; exit 1; }
 
 ## @ _DOC_OMF_HTML
 ## The OMF files for HTML output
@@ -195,7 +195,7 @@ if ENABLE_SK
 	  echo "Please check your ScrollKeeper installation." >&2;		\
 	  exit 1; }
 endif
-	xsltproc -o $@ $(call db2omf_args,$@,$<,'xhtml') || { rm -f "$@"; exit 1; }
+	xsltproc --nonet -o $@ $(call db2omf_args,$@,$<,'xhtml') || { rm -f "$@"; exit 1; }
 
 ## @ _DOC_OMF_ALL
 ## All OMF output files to be built
@@ -250,7 +250,7 @@ _DOC_C_FIGURES = $(if $(DOC_FIGURES),					\
 ## All HTML documentation in the C locale
 # FIXME: probably have to shell escape to determine the file names
 _DOC_C_HTML = $(foreach f,						\
-	$(shell xsltproc --xinclude 					\
+	$(shell xsltproc --nonet --xinclude				\
 	  --stringparam db.chunk.basename "$(DOC_MODULE)"		\
 	  $(_chunks) "C/$(DOC_MODULE).xml"),				\
 	C/$(f).xhtml)
@@ -379,7 +379,7 @@ _DOC_HTML_ALL = $(if $(filter html HTML,$(_DOC_REAL_FORMATS)), \
 _DOC_HTML_TOPS = $(foreach lc,C $(_DOC_REAL_LINGUAS),$(lc)/$(DOC_MODULE).xhtml)
 
 $(_DOC_HTML_TOPS): $(_DOC_C_DOCS) $(_DOC_LC_DOCS)
-	xsltproc -o $@ --xinclude --param db.chunk.chunk_top "false()" --stringparam db.chunk.basename "$(DOC_MODULE)" --stringparam db.chunk.extension ".xhtml" $(_db2html) $(patsubst %.xhtml,%.xml,$@)
+	xsltproc --nonet -o $@ --xinclude --param db.chunk.chunk_top "false()" --stringparam db.chunk.basename "$(DOC_MODULE)" --stringparam db.chunk.extension ".xhtml" $(_db2html) $(patsubst %.xhtml,%.xml,$@)
 
 
 ################################################################################

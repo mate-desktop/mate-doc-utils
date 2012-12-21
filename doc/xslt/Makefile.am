@@ -21,14 +21,14 @@ all: $(xsldoc_docs) $(xsldoc_xmls)
 
 $(xsldoc_docs): $(xsldoc_xsls) xsldoc.awk xsldoc-fill.xsl
 	$(GDU_AWK) -f "$(srcdir)/xsldoc.awk" "$(filter %/$(basename $(notdir $@)).xsl,$(xsldoc_xsls))" \
-	| xsltproc -o "$@" \
+	| xsltproc --nonet -o "$@" \
 	--stringparam basename "$(basename $(notdir $@))" \
 	--stringparam xsl_file "$(filter %/$(basename $(notdir $@)).xsl,$(xsldoc_xsls))" \
 	"$(srcdir)/xsldoc-fill.xsl" -
 
 $(xsldoc_xmls): xsldoc-docbook.xsl
 $(xsldoc_xmls): C/%.xml : C/%.xsldoc
-	xsltproc -o "$@" \
+	xsltproc --nonet -o "$@" \
 	--stringparam basename "$(basename $(notdir $@))" \
 	--stringparam xsl_file "$(filter %/$(basename $(notdir $@)).xsl,$(xsldoc_xsls))" \
 	"$(srcdir)/xsldoc-docbook.xsl" "$<"
@@ -62,7 +62,7 @@ mate-doc-xslt-check-includes:
 mate-doc-xslt-check-xsldoc: $(xsldoc_docs)
 	@echo "Running xsldoc checks";
 	@(echo "<xsldoc>"; cat $(xsldoc_docs); echo "</xsldoc>") \
-	| xsltproc "$(srcdir)/xsldoc-check.xsl" - 1> /dev/null
+	| xsltproc --nonet "$(srcdir)/xsldoc-check.xsl" - 1> /dev/null
 
 .PHONY: clean-xsldoc
 clean-local: clean_xsldoc
